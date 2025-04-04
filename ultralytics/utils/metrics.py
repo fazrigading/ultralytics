@@ -665,7 +665,7 @@ def ap_per_class(
     print("i smooth max f1 index:", i)
     p, r, f1 = p_curve[:, i], r_curve[:, i], f1_curve[:, i]  # max-F1 precision, recall, F1 values
     print("p r f1:")
-    print(p, r, f1='\n')
+    print(p, r, f1, sep='\n')
     tp = (r * nt).round()  # true positives
     fp = (tp / (p + eps) - tp).round()  # false positives
     print("tp:", tp)
