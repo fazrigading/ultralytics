@@ -620,18 +620,27 @@ def ap_per_class(
         n_p = i.sum()  # number of predictions
         if n_p == 0 or n_l == 0:
             continue
-
+        print("c:", c)
+        print("i, n_l, & n_p:")
+        print(i, n_l, n_p, sep='\n')
+        
         # Accumulate FPs and TPs
         fpc = (1 - tp[i]).cumsum(0)
         tpc = tp[i].cumsum(0)
-
+        print("fpc & tpc:")
+        print(fpc, tpc, sep='\n')
+        
         # Recall
         recall = tpc / (n_l + eps)  # recall curve
+        print("recall:", recall)
         r_curve[ci] = np.interp(-x, -conf[i], recall[:, 0], left=0)  # negative x, xp because xp decreases
+        print("r_curve[ci]", r_curve[ci])
 
         # Precision
         precision = tpc / (tpc + fpc)  # precision curve
+        print("precision:", precision)
         p_curve[ci] = np.interp(-x, -conf[i], precision[:, 0], left=1)  # p at pr_score
+        print("p_curve[ci]", p_curve[ci])
 
         # AP from recall-precision curve
         for j in range(tp.shape[1]):
@@ -643,6 +652,7 @@ def ap_per_class(
 
     # Compute F1 (harmonic mean of precision and recall)
     f1_curve = 2 * p_curve * r_curve / (p_curve + r_curve + eps)
+    print("f1_curve:", f1_curve)
     names = [v for k, v in names.items() if k in unique_classes]  # list: only classes that have data
     names = dict(enumerate(names))  # to dict
     if plot:
@@ -652,9 +662,14 @@ def ap_per_class(
         plot_mc_curve(x, r_curve, save_dir / f"{prefix}R_curve.png", names, ylabel="Recall", on_plot=on_plot)
 
     i = smooth(f1_curve.mean(0), 0.1).argmax()  # max F1 index
+    print("i smooth max f1 index:", i)
     p, r, f1 = p_curve[:, i], r_curve[:, i], f1_curve[:, i]  # max-F1 precision, recall, F1 values
+    print("p r f1:")
+    print(p, r, f1='\n')
     tp = (r * nt).round()  # true positives
     fp = (tp / (p + eps) - tp).round()  # false positives
+    print("tp:", tp)
+    print("fp:", fp)
     return tp, fp, p, r, f1, ap, unique_classes.astype(int), p_curve, r_curve, f1_curve, x, prec_values
 
 
