@@ -635,13 +635,13 @@ def ap_per_class(
         recall = tpc / (n_l + eps)  # recall curve
         # print("recall:", recall)
         r_curve[ci] = np.interp(-x, -conf[i], recall[:, 0], left=0)  # negative x, xp because xp decreases
-        print("r_curve[ci]:\n", r_curve[ci])
+        # print("r_curve[ci]:\n", r_curve[ci])
 
         # Precision
         precision = tpc / (tpc + fpc)  # precision curve
         # print("precision:", precision)
         p_curve[ci] = np.interp(-x, -conf[i], precision[:, 0], left=1)  # p at pr_score
-        print("p_curve[ci]:\n", p_curve[ci])
+        # print("p_curve[ci]:\n", p_curve[ci])
 
         # AP from recall-precision curve
         for j in range(tp.shape[1]):
@@ -662,7 +662,8 @@ def ap_per_class(
         plot_mc_curve(x, p_curve, save_dir / f"{prefix}P_curve.png", names, ylabel="Precision", on_plot=on_plot)
         plot_mc_curve(x, r_curve, save_dir / f"{prefix}R_curve.png", names, ylabel="Recall", on_plot=on_plot)
 
-    i = smooth(f1_curve.mean(0), 0.1).argmax()  # max F1 index
+    # i = smooth(f1_curve.mean(0), 0.1).argmax()  # max F1 index in 0.1
+    i = smooth(f1_curve.mean(0), 0.05).argmax()  # max F1 index
     print("i smooth max f1 index:", i)
     p, r, f1 = p_curve[:, i], r_curve[:, i], f1_curve[:, i]  # max-F1 precision, recall, F1 values
     print("p r f1:")
